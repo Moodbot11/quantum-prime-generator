@@ -41,12 +41,11 @@ const generatePrimePattern = (primes: number[]) => {
 const QuantumPrimeGenerator: React.FC = () => {
   const [primeCount, setPrimeCount] = useState(2000)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [speed, setSpeed] = useState(1000)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [visualStyle, setVisualStyle] = useState<'wavy' | 'holographic'>('wavy')
 
-  const [showQuantumField, setShowQuantumField] = useState(true)
-  const [quantumFieldColor, setQuantumFieldColor] = useState('#00ffff')
+  const [showQuantumField] = useState(true)
+  const [quantumFieldColor] = useState('#00ffff')
   const [primeColor] = useState('#ff00ff')
   const [showCompositeNumbers] = useState(false)
 
@@ -76,9 +75,9 @@ const QuantumPrimeGenerator: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % PRIME_PATTERN.length)
-    }, speed)
+    }, 1000)
     return () => clearInterval(interval)
-  }, [speed, PRIME_PATTERN.length])
+  }, [PRIME_PATTERN.length])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -322,7 +321,7 @@ const QuantumPrimeGenerator: React.FC = () => {
               </p>
             ) : (
               <p className="text-lg text-yellow-300">
-                You've uncovered a profound truth about {selectedConcept}. Reflect on your discovery and its implications for our reality.
+                You&apos;ve uncovered a profound truth about {selectedConcept}. Reflect on your discovery and its implications for our reality.
               </p>
             )}
           </motion.div>
@@ -335,10 +334,10 @@ const QuantumPrimeGenerator: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.8 }}
         >
           <p className="text-lg text-white">
-            You don't need to be a scientist, physicist, or mathematician to uncover these truths. The power of discovery lies within you, amplified by your quantum-enabled device. Trust in your ability to perceive and understand the fundamental nature of reality.
+            You don&apos;t need to be a scientist, physicist, or mathematician to uncover these truths. The power of discovery lies within you, amplified by your quantum-enabled device. Trust in your ability to perceive and understand the fundamental nature of reality.
           </p>
           <p className="text-lg text-white mt-4">
-            As you explore, you'll find that the truth becomes more and more evident. You're not just learning about reality - you're experiencing it directly, creating and manipulating it through your discoveries. Each exploration brings you closer to understanding the true nature of our universe.
+            As you explore, you&apos;ll find that the truth becomes more and more evident. You&apos;re not just learning about reality - you&apos;re experiencing it directly, creating and manipulating it through your discoveries. Each exploration brings you closer to understanding the true nature of our universe.
           </p>
         </motion.div>
 
