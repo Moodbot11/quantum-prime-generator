@@ -47,8 +47,8 @@ const QuantumPrimeGenerator: React.FC = () => {
 
   const [showQuantumField, setShowQuantumField] = useState(true)
   const [quantumFieldColor, setQuantumFieldColor] = useState('#00ffff')
-  const [primeColor, setPrimeColor] = useState('#ff00ff')
-  const [showCompositeNumbers, setShowCompositeNumbers] = useState(false)
+  const [primeColor] = useState('#ff00ff')
+  const [showCompositeNumbers] = useState(false)
 
   const [selectedConcept, setSelectedConcept] = useState<string | null>(null)
   const [isExploring, setIsExploring] = useState(false)
@@ -154,7 +154,7 @@ const QuantumPrimeGenerator: React.FC = () => {
     }
 
     animate()
-  }, [currentIndex, PRIME_PATTERN, showQuantumField, quantumFieldColor, primeColor, showCompositeNumbers, visualStyle])
+  }, [currentIndex, PRIME_PATTERN, showQuantumField, quantumFieldColor, primeColor, showCompositeNumbers, visualStyle, primes])
 
   const calculateMissedPrimes = () => {
     return "0.00"
@@ -287,7 +287,7 @@ const QuantumPrimeGenerator: React.FC = () => {
         >
           <h3 className="text-2xl font-semibold text-cyan-400 mb-4">Embark on Your Quantum Journey</h3>
           <p className="text-lg text-yellow-300 mb-4">
-            Choose one of these concepts and find the solution and proof that you are correct - make the solution and discover it yourself. Your quantum computer will show you the way. Don't worry, you won't fail; you will find the truth and you will know it to be the truth. But rather than be taught, you will learn it better by discovering it for yourself.
+            Choose one of these concepts and find the solution and proof that you are correct - make the solution and discover it yourself. Your quantum computer will show you the way. Don&apos;t worry, you won&apos;t fail; you will find the truth and you will know it to be the truth. But rather than be taught, you will learn it better by discovering it for yourself.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {quantumConcepts.map((concept, index) => (
@@ -358,19 +358,19 @@ const QuantumPrimeGenerator: React.FC = () => {
               Mark Moody, a pioneering researcher in pilot wave science, has unlocked the potential to transform any device into a quantum computer. This breakthrough allows users to explore reality and understand the nature of everything in ways previously thought impossible.
             </p>
             <p className="text-yellow-300 text-lg mb-4">
-              Don't worry, you don't have to write any code. That's not how quantum computers work—the code is already there. Remember, quantum computers are smart. With the briefest of explanations, they can figure out whatever problem you're trying to solve and solve it.
+              Don&apos;t worry, you don&apos;t have to write any code. That&apos;s not how quantum computers work—the code is already there. Remember, quantum computers are smart. With the briefest of explanations, they can figure out whatever problem you&apos;re trying to solve and solve it.
             </p>
             <p className="text-yellow-300 text-lg mb-4">
-              On this website, you will see that we can solve pretty much all of the unknown physics phenomena and provide instant, undeniable proof—proof that you can see, touch, and hold. This is quantum computing. On every page, you'll find things that cannot be done by humans or all of our computers combined, but you will find and witness here.
+              On this website, you will see that we can solve pretty much all of the unknown physics phenomena and provide instant, undeniable proof—proof that you can see, touch, and hold. This is quantum computing. On every page, you&apos;ll find things that cannot be done by humans or all of our computers combined, but you will find and witness here.
             </p>
             <p className="text-yellow-300 text-lg mb-4">
-              You will be shown proof of quantum-level wave interference, color function, wave collapse, and how our reality is created at this level. You'll explore the hologram we live in, the matrix, the actual fundamental code running the universe, and even the divine creators. You will witness them all, communicate with them all, and actually create your own proof right in front of your eyes.
+              You will be shown proof of quantum-level wave interference, color function, wave collapse, and how our reality is created at this level. You&apos;ll explore the hologram we live in, the matrix, the actual fundamental code running the universe, and even the divine creators. You will witness them all, communicate with them all, and actually create your own proof right in front of your eyes.
             </p>
             <p className="text-yellow-300 text-lg mb-4">
-              This is the first time you're ever going to be given an explanation about God, the universe, and reality—and handed the proof in that moment. You'll be shown how to change and manipulate your reality. That is what you will learn here. The truth has been hidden from you for a simple reason: powerful people don't want to lose or share their power. They've filled your head with misinformation so that you would never be able to control and manipulate reality as they do.
+              This is the first time you&apos;re ever going to be given an explanation about God, the universe, and reality—and handed the proof in that moment. You&apos;ll be shown how to change and manipulate your reality. That is what you will learn here. The truth has been hidden from you for a simple reason: powerful people don&apos;t want to lose or share their power. They&apos;ve filled your head with misinformation so that you would never be able to control and manipulate reality as they do.
             </p>
             <p className="text-yellow-300 text-lg">
-              Finally, thank you to Mr. Moody for his discoveries and willingness to share the truth with all of us. They can't hide the truth from you anymore. As you go through the pages here, the truth will become more and more evident to you. Plus, you'll literally be able to create pieces of reality here. You'll get better and better at it as you learn more.
+              Finally, thank you to Mr. Moody for his discoveries and willingness to share the truth with all of us. They can&apos;t hide the truth from you anymore. As you go through the pages here, the truth will become more and more evident to you. Plus, you&apos;ll literally be able to create pieces of reality here. You&apos;ll get better and better at it as you learn more.
             </p>
           </motion.div>
           <h2 className="text-3xl font-bold text-cyan-400 mb-4">Unveiling the Hidden Order: Quantum Patterns in Prime Numbers</h2>
