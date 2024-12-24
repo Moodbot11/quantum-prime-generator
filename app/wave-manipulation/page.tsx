@@ -17,68 +17,18 @@ const WaveManipulation: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
-  // const router = useRouter()
-
   const originalImageRef = useRef<HTMLImageElement | null>(null)
-
-  const animate = useCallback((): (() => void) => {
-    return () => {
-      const animateFrame = (time: number) => {
-        if (canvasRef.current && originalImageRef.current) {
-          const canvas = canvasRef.current
-          const ctx = canvas.getContext('2d')
-          if (!ctx) return
-
-          ctx.clearRect(0, 0, canvas.width, canvas.height)
-          ctx.fillStyle = 'white'
-          ctx.fillRect(0, 0, canvas.width, canvas.height)
-          ctx.save()
-          ctx.translate(canvas.width / 2, canvas.height / 2)
-          ctx.rotate(rotation * Math.PI / 180)
-        
-          const imageAspectRatio = originalImageRef.current.width / originalImageRef.current.height
-          const canvasAspectRatio = canvas.width / canvas.height
-        
-          let drawWidth, drawHeight
-        
-          if (canvasAspectRatio > imageAspectRatio) {
-            drawHeight = canvas.height * scale
-            drawWidth = drawHeight * imageAspectRatio
-          } else {
-            drawWidth = canvas.width * scale
-            drawHeight = drawWidth / imageAspectRatio
-          }
-        
-          // Apply wave effect (stretching and shrinking)
-          const stretchFactor = 1 + Math.sin(time * 0.001 * waveFrequency) * (waveAmplitude / 100)
-          drawWidth *= stretchFactor
-          drawHeight *= stretchFactor
-
-          ctx.drawImage(originalImageRef.current, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight)
-
-          ctx.restore()
-        }
-        animationRef.current = requestAnimationFrame(animateFrame)
-        
-        // Return a cleanup function
-        return () => {
-          if (animationRef.current) {
-            cancelAnimationFrame(animationRef.current)
-          }
-        }
-      }
-      animationRef.current = requestAnimationFrame(animateFrame)
-    }
-  }, [scale, rotation, waveAmplitude, waveFrequency])
 
   useEffect(() => {
     const storedImageData = localStorage.getItem('capturedWaveImage')
+    console.log('Stored Image Data:', storedImageData ? 'Present' : 'Not found')
     if (storedImageData) {
       setImageData(storedImageData)
       localStorage.removeItem('capturedWaveImage')
 
       const img = new Image()
       img.onload = () => {
+        console.log('Image loaded successfully')
         originalImageRef.current = img
         if (canvasRef.current && containerRef.current) {
           const ctx = canvasRef.current.getContext('2d')
@@ -91,7 +41,8 @@ const WaveManipulation: React.FC = () => {
           const containerAspectRatio = containerRef.current.clientWidth / containerRef.current.clientHeight
           const imageAspectRatio = img.width / img.height
         
-          let canvasWidth, canvasHeight
+          let canvasWidth: number
+          let canvasHeight: number
         
           if (containerAspectRatio > imageAspectRatio) {
             canvasHeight = containerRef.current.clientHeight
@@ -104,17 +55,19 @@ const WaveManipulation: React.FC = () => {
           canvasRef.current.width = canvasWidth
           canvasRef.current.height = canvasHeight
         
-          const animationCleanup = animate()
-          return () => {
-            if (typeof animationCleanup === 'function') {
-              animationCleanup()
-            }
-          }
+          // Initial render of the image
+          ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight)
         }
       }
       img.src = storedImageData
     }
-  }, [animate])
+  
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [scale, rotation, waveAmplitude, waveFrequency])
 
   const handleScale = (event: React.ChangeEvent<HTMLInputElement>) => {
     setScale(parseFloat(event.target.value))
@@ -140,34 +93,39 @@ const WaveManipulation: React.FC = () => {
   //   setClarity(parseFloat(event.target.value))
   // }
 
-  const startRecording = () => {
+  const startRecording = useCallback(() => {
     if (canvasRef.current) {
-      const stream = canvasRef.current.captureStream(60)
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' })
+      try {
+        const stream = canvasRef.current.captureStream(60)
+        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' })
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data)
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            chunksRef.current.push(event.data)
+          }
         }
-      }
 
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        document.body.appendChild(a)
-        a.style.display = 'none'
-        a.href = url
-        a.download = 'wave_manipulation.webm'
-        a.click()
-        window.URL.revokeObjectURL(url)
-      }
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          document.body.appendChild(a)
+          a.style.display = 'none'
+          a.href = url
+          a.download = 'wave_manipulation.webm'
+          a.click()
+          window.URL.revokeObjectURL(url)
+        }
 
-      mediaRecorderRef.current = mediaRecorder
-      mediaRecorder.start()
-      setIsRecording(true)
+        mediaRecorderRef.current = mediaRecorder
+        mediaRecorder.start()
+        setIsRecording(true)
+      } catch (error) {
+        console.error('Error starting recording:', error)
+        alert('Failed to start recording. Your browser may not support this feature.')
+      }
     }
-  }
+  }, [])
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
@@ -183,6 +141,59 @@ const WaveManipulation: React.FC = () => {
     setWaveAmplitude(0)
     setWaveFrequency(1)
   }
+
+  const animate = useCallback(() => {
+    if (!canvasRef.current || !originalImageRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const animateFrame = (time: number) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.save()
+      ctx.translate(canvas.width / 2, canvas.height / 2)
+      ctx.rotate(rotation * Math.PI / 180)
+    
+      const imageAspectRatio = originalImageRef.current.width / originalImageRef.current.height
+      const canvasAspectRatio = canvas.width / canvas.height
+    
+      let drawWidth: number
+      let drawHeight: number
+    
+      if (canvasAspectRatio > imageAspectRatio) {
+        drawHeight = canvas.height * scale
+        drawWidth = drawHeight * imageAspectRatio
+      } else {
+        drawWidth = canvas.width * scale
+        drawHeight = drawWidth / imageAspectRatio
+      }
+    
+      // Apply wave effect (stretching and shrinking)
+      const stretchFactor = 1 + Math.sin(time * 0.001 * waveFrequency) * (waveAmplitude / 100)
+      drawWidth *= stretchFactor
+      drawHeight *= stretchFactor
+
+      ctx.drawImage(originalImageRef.current, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight)
+
+      ctx.restore()
+      animationRef.current = requestAnimationFrame(animateFrame)
+    }
+
+    animationRef.current = requestAnimationFrame(animateFrame)
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [scale, rotation, waveAmplitude, waveFrequency])
+
+  useEffect(() => {
+    const cleanup = animate()
+    return cleanup
+  }, [animate])
+
 
   return (
     <div className="p-6 bg-white">
@@ -280,7 +291,11 @@ const WaveManipulation: React.FC = () => {
             </div>
           </div>
           <div className="md:w-2/3" ref={containerRef} style={{ height: '600px' }}>
-            <canvas ref={canvasRef} className="border border-gray-300 w-full h-full" />
+            <canvas 
+              ref={canvasRef} 
+              className="border border-gray-300 w-full h-full" 
+              aria-label="Wave Manipulation Visualization"
+            />
           </div>
         </div>
       )}
