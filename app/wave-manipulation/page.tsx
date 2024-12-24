@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 
 const WaveManipulation: React.FC = () => {
@@ -61,7 +61,7 @@ const WaveManipulation: React.FC = () => {
     }
   }, [])
 
-  const animate = useMemo(() => {
+  const animate = useCallback(() => {
     return () => {
       const animateFrame = (time: number) => {
         if (canvasRef.current && originalImageRef.current) {
