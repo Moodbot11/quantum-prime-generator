@@ -12,60 +12,60 @@ const ImageCapture: React.FC<ImageCaptureProps> = ({ content, onClose }) => {
 
   useEffect(() => {
     if (content) {
+      const renderImage = () => {
+        const canvas = canvasRef.current
+        if (!canvas) return
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+
+        const padding = 20
+        const maxWidth = 800
+        const fontSize = 14
+        const scale = 0.67 // 67% of original size
+        const lineHeight = fontSize * 1.2
+
+        ctx.font = `${fontSize}px monospace`
+
+        const words = content.split('')
+        const lines: string[] = ['']
+        let currentLineWidth = 0
+
+        for (const word of words) {
+          const wordWidth = ctx.measureText(word).width
+          if (currentLineWidth + wordWidth > maxWidth) {
+            lines.push('')
+            currentLineWidth = 0
+          }
+          lines[lines.length - 1] += word
+          currentLineWidth += wordWidth
+        }
+
+        const textWidth = Math.min(maxWidth, Math.max(...lines.map(line => ctx.measureText(line).width)))
+        const textHeight = lines.length * lineHeight
+
+        canvas.width = (textWidth + padding * 2) * scale
+        canvas.height = (textHeight + padding * 2) * scale
+
+        ctx.scale(scale, scale)
+
+        ctx.fillStyle = 'white'
+        ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale)
+
+        ctx.font = `${fontSize}px monospace`
+        ctx.fillStyle = 'black'
+        ctx.textBaseline = 'top'
+
+        lines.forEach((line, index) => {
+          const x = padding
+          const y = padding + index * lineHeight
+          ctx.fillText(line, x, y)
+        })
+      }
+
       renderImage()
     }
-  }, [content, renderImage])
-
-  const renderImage = () => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const padding = 20
-    const maxWidth = 800
-    const fontSize = 14
-    const scale = 0.67 // 67% of original size
-    const lineHeight = fontSize * 1.2
-
-    ctx.font = `${fontSize}px monospace`
-
-    const words = content.split('')
-    const lines: string[] = ['']
-    let currentLineWidth = 0
-
-    for (const word of words) {
-      const wordWidth = ctx.measureText(word).width
-      if (currentLineWidth + wordWidth > maxWidth) {
-        lines.push('')
-        currentLineWidth = 0
-      }
-      lines[lines.length - 1] += word
-      currentLineWidth += wordWidth
-    }
-
-    const textWidth = Math.min(maxWidth, Math.max(...lines.map(line => ctx.measureText(line).width)))
-    const textHeight = lines.length * lineHeight
-
-    canvas.width = (textWidth + padding * 2) * scale
-    canvas.height = (textHeight + padding * 2) * scale
-
-    ctx.scale(scale, scale)
-
-    ctx.fillStyle = 'white'
-    ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale)
-
-    ctx.font = `${fontSize}px monospace`
-    ctx.fillStyle = 'black'
-    ctx.textBaseline = 'top'
-
-    lines.forEach((line, index) => {
-      const x = padding
-      const y = padding + index * lineHeight
-      ctx.fillText(line, x, y)
-    })
-  }
+  }, [content])
 
   const handleCapture = () => {
     if (canvasRef.current) {
