@@ -99,16 +99,26 @@ const WaveManipulation: React.FC = () => {
           ctx.restore()
         }
         animationRef.current = requestAnimationFrame(animateFrame)
+        
+        // Return a cleanup function
+        return () => {
+          if (animationRef.current) {
+            cancelAnimationFrame(animationRef.current)
+          }
+        }
       }
       animationRef.current = requestAnimationFrame(animateFrame)
     }
   }, [scale, rotation, waveAmplitude, waveFrequency])
 
   useEffect(() => {
-    animate()
+    const animationCleanup = animate()
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
+      }
+      if (typeof animationCleanup === 'function') {
+        animationCleanup()
       }
     }
   }, [animate])
