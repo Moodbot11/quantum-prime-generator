@@ -19,15 +19,15 @@ const FrequencyAnalyzer: React.FC = () => {
   const [analysis, setAnalysis] = useState<string>('')
   const [medicalAnalysis, setMedicalAnalysis] = useState<string>('')
   const [error, setError] = useState<string>('')
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyzerRef = useRef<AnalyserNode | null>(null)
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null)
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     return () => {
-      if (animationFrameRef.current) {
+      if (animationFrameRef.current !== null) {
         cancelAnimationFrame(animationFrameRef.current)
       }
       if (audioContextRef.current) {
@@ -62,7 +62,7 @@ const FrequencyAnalyzer: React.FC = () => {
     if (sourceRef.current) {
       sourceRef.current.disconnect()
     }
-    if (animationFrameRef.current) {
+    if (animationFrameRef.current !== null) {
       cancelAnimationFrame(animationFrameRef.current)
     }
     setIsRecording(false)
@@ -70,7 +70,7 @@ const FrequencyAnalyzer: React.FC = () => {
   }
 
   const visualize = () => {
-    if (!analyzerRef.current || !canvasRef.current) return
+    if (!analyzerRef.current || !canvasRef.current || !audioContextRef.current) return
 
     const canvas = canvasRef.current
     const canvasCtx = canvas.getContext('2d')
