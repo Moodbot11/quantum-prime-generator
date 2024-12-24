@@ -21,52 +21,7 @@ const WaveManipulation: React.FC = () => {
 
   const originalImageRef = useRef<HTMLImageElement | null>(null)
 
-  useEffect(() => {
-    const storedImageData = localStorage.getItem('capturedWaveImage')
-    if (storedImageData) {
-      setImageData(storedImageData)
-      localStorage.removeItem('capturedWaveImage')
-
-      const img = new Image()
-      img.onload = () => {
-        originalImageRef.current = img
-        if (canvasRef.current && containerRef.current) {
-          const ctx = canvasRef.current.getContext('2d')
-          if (ctx) {
-            ctx.imageSmoothingEnabled = true
-            ctx.imageSmoothingQuality = 'high'
-          }
-        
-          // Set canvas size to match the container, maintaining aspect ratio
-          const containerAspectRatio = containerRef.current.clientWidth / containerRef.current.clientHeight
-          const imageAspectRatio = img.width / img.height
-        
-          let canvasWidth, canvasHeight
-        
-          if (containerAspectRatio > imageAspectRatio) {
-            canvasHeight = containerRef.current.clientHeight
-            canvasWidth = canvasHeight * imageAspectRatio
-          } else {
-            canvasWidth = containerRef.current.clientWidth
-            canvasHeight = canvasWidth / imageAspectRatio
-          }
-        
-          canvasRef.current.width = canvasWidth
-          canvasRef.current.height = canvasHeight
-        
-          const animationCleanup = animate()
-          return () => {
-            if (typeof animationCleanup === 'function') {
-              animationCleanup()
-            }
-          }
-        }
-      }
-      img.src = storedImageData
-    }
-  }, [animate])
-
-  const animate = useCallback(() => {
+  const animate = useCallback((): (() => void) => {
     return () => {
       const animateFrame = (time: number) => {
         if (canvasRef.current && originalImageRef.current) {
@@ -116,6 +71,50 @@ const WaveManipulation: React.FC = () => {
     }
   }, [scale, rotation, waveAmplitude, waveFrequency])
 
+  useEffect(() => {
+    const storedImageData = localStorage.getItem('capturedWaveImage')
+    if (storedImageData) {
+      setImageData(storedImageData)
+      localStorage.removeItem('capturedWaveImage')
+
+      const img = new Image()
+      img.onload = () => {
+        originalImageRef.current = img
+        if (canvasRef.current && containerRef.current) {
+          const ctx = canvasRef.current.getContext('2d')
+          if (ctx) {
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
+          }
+        
+          // Set canvas size to match the container, maintaining aspect ratio
+          const containerAspectRatio = containerRef.current.clientWidth / containerRef.current.clientHeight
+          const imageAspectRatio = img.width / img.height
+        
+          let canvasWidth, canvasHeight
+        
+          if (containerAspectRatio > imageAspectRatio) {
+            canvasHeight = containerRef.current.clientHeight
+            canvasWidth = canvasHeight * imageAspectRatio
+          } else {
+            canvasWidth = containerRef.current.clientWidth
+            canvasHeight = canvasWidth / imageAspectRatio
+          }
+        
+          canvasRef.current.width = canvasWidth
+          canvasRef.current.height = canvasHeight
+        
+          const animationCleanup = animate()
+          return () => {
+            if (typeof animationCleanup === 'function') {
+              animationCleanup()
+            }
+          }
+        }
+      }
+      img.src = storedImageData
+    }
+  }, [animate])
 
   const handleScale = (event: React.ChangeEvent<HTMLInputElement>) => {
     setScale(parseFloat(event.target.value))
