@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 
 const WaveManipulation: React.FC = () => {
@@ -54,12 +54,17 @@ const WaveManipulation: React.FC = () => {
           canvasRef.current.width = canvasWidth
           canvasRef.current.height = canvasHeight
         
-          animate()
+          const animationCleanup = animate()
+          return () => {
+            if (typeof animationCleanup === 'function') {
+              animationCleanup()
+            }
+          }
         }
       }
       img.src = storedImageData
     }
-  }, [])
+  }, [animate])
 
   const animate = useCallback(() => {
     return () => {
@@ -111,17 +116,6 @@ const WaveManipulation: React.FC = () => {
     }
   }, [scale, rotation, waveAmplitude, waveFrequency])
 
-  useEffect(() => {
-    const animationCleanup = animate()
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-      if (typeof animationCleanup === 'function') {
-        animationCleanup()
-      }
-    }
-  }, [animate])
 
   const handleScale = (event: React.ChangeEvent<HTMLInputElement>) => {
     setScale(parseFloat(event.target.value))
