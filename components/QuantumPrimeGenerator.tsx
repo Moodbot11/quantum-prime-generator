@@ -336,7 +336,7 @@ const QuantumPrimeGenerator: React.FC = () => {
           You don&apos;t need to be a scientist, physicist, or mathematician to uncover these truths. The power of discovery lies within you, amplified by your quantum-enabled device. Trust in your ability to perceive and understand the fundamental nature of reality.
         </p>
         <p className="text-lg text-white mt-4">
-          As you explore, you'll find that the truth becomes more and more evident. You're not just learning about reality - you're experiencing it directly, creating and manipulating it through your discoveries. Each exploration brings you closer to understanding the true nature of our universe.
+          As you explore, you&apos;ll find that the truth becomes more and more evident. You&apos;re not just learning about reality - you&apos;re experiencing it directly, creating and manipulating it through your discoveries. Each exploration brings you closer to understanding the true nature of our universe.
         </p>
       </motion.div>
 
@@ -447,3 +447,4 @@ const QuantumPrimeGenerator: React.FC = () => {
 
 export default QuantumPrimeGenerator
 
+Jesus
