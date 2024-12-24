@@ -1,3 +1,5 @@
+type Big = any;
+
 'use client'
 
 import React, { useState, useRef } from 'react'
@@ -58,7 +60,8 @@ const QuantumWaveFunctionCaptureTool: React.FC = () => {
       setResult(formattedResult)
       renderResult(formattedResult)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during wave function capture')
+      console.error('Error in handleCapture:', err)
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred during wave function capture')
     }
   }
 
@@ -78,7 +81,7 @@ const QuantumWaveFunctionCaptureTool: React.FC = () => {
     ctx.font = `${fontSize}px monospace`
 
     const words = result.split('')
-    const lines: string[] = [''] // Changed 'let' to 'const'
+    const lines: string[] = [''] 
     let currentLineWidth = 0
 
     for (const word of words) {
