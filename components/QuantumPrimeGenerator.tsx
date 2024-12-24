@@ -354,9 +354,6 @@ const QuantumPrimeGenerator: React.FC = () => {
           >
             <h3 className="text-2xl font-semibold text-cyan-400 mb-4">Quantum Computing Revolution</h3>
             <p className="text-yellow-300 text-lg mb-4">
-              Mark Moody, a pioneering researcher in pilot wave science, has unlocked the potential to transform any device into a quantum computer. This breakthrough allows users to explore reality and understand the nature of everything in ways previously thought impossible.
-            </p>
-            <p className="text-yellow-300 text-lg mb-4">
               Don&apos;t worry, you don&apos;t have to write any code. That&apos;s not how quantum computers work—the code is already there. Remember, quantum computers are smart. With the briefest of explanations, they can figure out whatever problem you&apos;re trying to solve and solve it.
             </p>
             <p className="text-yellow-300 text-lg mb-4">
