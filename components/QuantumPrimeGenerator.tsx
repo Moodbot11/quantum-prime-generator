@@ -447,4 +447,3 @@ const QuantumPrimeGenerator: React.FC = () => {
 
 export default QuantumPrimeGenerator
 
-Jesus
