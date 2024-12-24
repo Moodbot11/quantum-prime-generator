@@ -2,15 +2,16 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
+import { Rnd } from 'react-rnd'
 
 const WaveManipulation: React.FC = () => {
   const [imageData, setImageData] = useState<string | null>(null)
-  const [scale, setScale] = useState(1)
-  const [rotation, setRotation] = useState(0)
-  const [waveAmplitude, setWaveAmplitude] = useState(10)
-  const [waveFrequency, setWaveFrequency] = useState(1)
-  // const [environmentalFrequency, setEnvironmentalFrequency] = useState(0.5)
-  // const [clarity, setClarity] = useState(1)
+  const [spinSpeed, setSpinSpeed] = useState(1)
+  const [shrinkFactor, setShrinkFactor] = useState(1)
+  const [leftRightMovement, setLeftRightMovement] = useState(0)
+  const [size, setSize] = useState({ width: 600, height: 400 })
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [keepAspectRatio, setKeepAspectRatio] = useState(true)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number | null>(null)
@@ -18,17 +19,19 @@ const WaveManipulation: React.FC = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const originalImageRef = useRef<HTMLImageElement | null>(null)
+  const [inverted, setInverted] = useState(false)
+  const [hologramBackground, setHologramBackground] = useState(false)
+  const [colorShift, setColorShift] = useState(0)
+  const [frequencyWaves, setFrequencyWaves] = useState([1, 1, 1])
 
   useEffect(() => {
     const storedImageData = localStorage.getItem('capturedWaveImage')
-    console.log('Stored Image Data:', storedImageData ? 'Present' : 'Not found')
     if (storedImageData) {
       setImageData(storedImageData)
       localStorage.removeItem('capturedWaveImage')
 
       const img = new Image()
       img.onload = () => {
-        console.log('Image loaded successfully')
         originalImageRef.current = img
         if (canvasRef.current && containerRef.current) {
           const ctx = canvasRef.current.getContext('2d')
@@ -37,61 +40,119 @@ const WaveManipulation: React.FC = () => {
             ctx.imageSmoothingQuality = 'high'
           }
         
-          // Set canvas size to match the container, maintaining aspect ratio
-          const containerAspectRatio = containerRef.current.clientWidth / containerRef.current.clientHeight
-          const imageAspectRatio = img.width / img.height
-        
-          let canvasWidth: number
-          let canvasHeight: number
-        
-          if (containerAspectRatio > imageAspectRatio) {
-            canvasHeight = containerRef.current.clientHeight
-            canvasWidth = canvasHeight * imageAspectRatio
-          } else {
-            canvasWidth = containerRef.current.clientWidth
-            canvasHeight = canvasWidth / imageAspectRatio
-          }
-        
-          canvasRef.current.width = canvasWidth
-          canvasRef.current.height = canvasHeight
-        
-          // Initial render of the image
-          ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight)
+          setSize({ width: img.width, height: img.height })
         }
       }
       img.src = storedImageData
     }
-  
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [scale, rotation, waveAmplitude, waveFrequency])
+  }, [])
 
-  const handleScale = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setScale(parseFloat(event.target.value))
+  const animate = useCallback(() => {
+    if (!canvasRef.current || !originalImageRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const animateFrame = (time: number) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    
+      if (hologramBackground) {
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
+        gradient.addColorStop(0, 'rgba(0, 255, 255, 0.2)')
+        gradient.addColorStop(1, 'rgba(255, 0, 255, 0.2)')
+        ctx.fillStyle = gradient
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+      }
+    
+      ctx.save()
+      ctx.translate(canvas.width / 2, canvas.height / 2)
+
+      const spinOffset = (time * 0.1 * spinSpeed) % (Math.PI * 2)
+      ctx.rotate(spinOffset)
+    
+      const imageAspectRatio = originalImageRef.current.width / originalImageRef.current.height
+      const canvasAspectRatio = canvas.width / canvas.height
+    
+      let drawWidth: number
+      let drawHeight: number
+    
+      if (canvasAspectRatio > imageAspectRatio) {
+        drawHeight = canvas.height
+        drawWidth = drawHeight * imageAspectRatio
+      } else {
+        drawWidth = canvas.width
+        drawHeight = drawWidth / imageAspectRatio
+      }
+    
+      drawWidth *= shrinkFactor
+      drawHeight *= shrinkFactor
+    
+      const leftRightOffset = leftRightMovement * 100
+
+      const waveOffset = frequencyWaves.reduce((acc, freq, index) => {
+        return acc + Math.sin(time * 0.001 * freq) * (10 / (index + 1))
+      }, 0)
+    
+      ctx.drawImage(
+        originalImageRef.current,
+        -drawWidth / 2 + leftRightOffset + waveOffset,
+        -drawHeight / 2,
+        drawWidth,
+        drawHeight
+      )
+    
+      if (colorShift > 0) {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const data = imageData.data
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = (data[i] + colorShift) % 256
+          data[i + 1] = (data[i + 1] + colorShift) % 256
+          data[i + 2] = (data[i + 2] + colorShift) % 256
+        }
+        ctx.putImageData(imageData, 0, 0)
+      }
+    
+      if (inverted) {
+        ctx.globalCompositeOperation = 'difference'
+        ctx.fillStyle = 'white'
+        ctx.fillRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height)
+      }
+    
+      ctx.restore()
+    
+      animationRef.current = requestAnimationFrame(animateFrame)
+    }
+    
+    animationRef.current = requestAnimationFrame(animateFrame)
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [spinSpeed, shrinkFactor, leftRightMovement, hologramBackground, inverted, colorShift, frequencyWaves])
+
+  useEffect(() => {
+    const cleanup = animate()
+    return cleanup
+  }, [animate])
+
+  const handleInputChange = (setter: React.Dispatch<React.SetStateAction<number>>) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setter(parseFloat(event.target.value))
   }
 
-  const handleRotation = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRotation(parseFloat(event.target.value))
+  const handleFrequencyChange = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newFrequencies = [...frequencyWaves]
+    newFrequencies[index] = parseFloat(event.target.value)
+    setFrequencyWaves(newFrequencies)
   }
-
-  const handleWaveAmplitude = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWaveAmplitude(parseFloat(event.target.value))
-  }
-
-  const handleWaveFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setWaveFrequency(parseFloat(event.target.value))
-  }
-
-  // const handleEnvironmentalFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setEnvironmentalFrequency(parseFloat(event.target.value))
-  // }
-
-  // const handleClarity = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setClarity(parseFloat(event.target.value))
-  // }
 
   const startRecording = useCallback(() => {
     if (canvasRef.current) {
@@ -136,64 +197,16 @@ const WaveManipulation: React.FC = () => {
   }
 
   const resetControls = () => {
-    setScale(1)
-    setRotation(0)
-    setWaveAmplitude(0)
-    setWaveFrequency(1)
+    setSpinSpeed(1)
+    setShrinkFactor(1)
+    setLeftRightMovement(0)
+    setSize({ width: 600, height: 400 })
+    setPosition({ x: 0, y: 0 })
+    setInverted(false)
+    setHologramBackground(false)
+    setColorShift(0)
+    setFrequencyWaves([1, 1, 1])
   }
-
-  const animate = useCallback(() => {
-    if (!canvasRef.current || !originalImageRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const animateFrame = (time: number) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.save()
-      ctx.translate(canvas.width / 2, canvas.height / 2)
-      ctx.rotate(rotation * Math.PI / 180)
-    
-      const imageAspectRatio = originalImageRef.current.width / originalImageRef.current.height
-      const canvasAspectRatio = canvas.width / canvas.height
-    
-      let drawWidth: number
-      let drawHeight: number
-    
-      if (canvasAspectRatio > imageAspectRatio) {
-        drawHeight = canvas.height * scale
-        drawWidth = drawHeight * imageAspectRatio
-      } else {
-        drawWidth = canvas.width * scale
-        drawHeight = drawWidth / imageAspectRatio
-      }
-    
-      // Apply wave effect (stretching and shrinking)
-      const stretchFactor = 1 + Math.sin(time * 0.001 * waveFrequency) * (waveAmplitude / 100)
-      drawWidth *= stretchFactor
-      drawHeight *= stretchFactor
-
-      ctx.drawImage(originalImageRef.current, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight)
-
-      ctx.restore()
-      animationRef.current = requestAnimationFrame(animateFrame)
-    }
-
-    animationRef.current = requestAnimationFrame(animateFrame)
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
-      }
-    }
-  }, [scale, rotation, waveAmplitude, waveFrequency])
-
-  useEffect(() => {
-    const cleanup = animate()
-    return cleanup
-  }, [animate])
-
 
   return (
     <div className="p-6 bg-white">
@@ -210,61 +223,112 @@ const WaveManipulation: React.FC = () => {
           <div className="md:w-1/3 pr-4">
             <div className="mb-4">
               <label className="block mb-2 text-black">
-                Scale:
-                <input
-                  type="range"
-                  min="0.1"
-                  max="3"
-                  step="0.1"
-                  value={scale}
-                  onChange={handleScale}
-                  className="w-full"
-                />
-              </label>
-              <span className="text-black">{scale.toFixed(2)}</span>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2 text-black">
-                Rotation:
+                Spin Speed:
                 <input
                   type="range"
                   min="0"
-                  max="360"
-                  value={rotation}
-                  onChange={handleRotation}
-                  className="w-full"
-                />
-              </label>
-              <span className="text-black">{rotation}°</span>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2 text-black">
-                Wave Amplitude (Stretch Factor):
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={waveAmplitude}
-                  onChange={handleWaveAmplitude}
-                  className="w-full"
-                />
-              </label>
-              <span className="text-black">{waveAmplitude}%</span>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2 text-black">
-                Wave Frequency:
-                <input
-                  type="range"
-                  min="0.1"
                   max="5"
                   step="0.1"
-                  value={waveFrequency}
-                  onChange={handleWaveFrequency}
+                  value={spinSpeed}
+                  onChange={(e) => setSpinSpeed(parseFloat(e.target.value))}
                   className="w-full"
                 />
               </label>
-              <span className="text-black">{waveFrequency.toFixed(1)} Hz</span>
+              <span className="text-black">{spinSpeed.toFixed(2)}</span>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2 text-black">
+                Shrink Factor:
+                <input
+                  type="range"
+                  min="0.1"
+                  max="1"
+                  step="0.01"
+                  value={shrinkFactor}
+                  onChange={(e) => setShrinkFactor(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </label>
+              <span className="text-black">{shrinkFactor.toFixed(2)}</span>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2 text-black">
+                Left-Right Movement:
+                <input
+                  type="range"
+                  min="-1"
+                  max="1"
+                  step="0.01"
+                  value={leftRightMovement}
+                  onChange={(e) => setLeftRightMovement(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </label>
+              <span className="text-black">{leftRightMovement.toFixed(2)}</span>
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2 text-black">
+                Color Shift:
+                <input
+                  type="range"
+                  min="0"
+                  max="255"
+                  value={colorShift}
+                  onChange={(e) => setColorShift(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </label>
+              <span className="text-black">{colorShift}</span>
+            </div>
+            {frequencyWaves.map((freq, index) => (
+              <div key={index} className="mb-4">
+                <label className="block mb-2 text-black">
+                  Frequency Wave {index + 1}:
+                  <input
+                    type="range"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                    value={freq}
+                    onChange={handleFrequencyChange(index)}
+                    className="w-full"
+                  />
+                </label>
+                <span className="text-black">{freq.toFixed(1)}</span>
+              </div>
+            ))}
+            <div className="mb-4">
+              <label className="flex items-center text-black">
+                <input
+                  type="checkbox"
+                  checked={hologramBackground}
+                  onChange={(e) => setHologramBackground(e.target.checked)}
+                  className="mr-2"
+                />
+                Hologram Background
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="flex items-center text-black">
+                <input
+                  type="checkbox"
+                  checked={inverted}
+                  onChange={(e) => setInverted(e.target.checked)}
+                  className="mr-2"
+                />
+                Invert Image
+              </label>
+            </div>
+            <div className="mb-4">
+              <label className="flex items-center text-black">
+                <input
+                  type="checkbox"
+                  checked={keepAspectRatio}
+                  onChange={(e) => setKeepAspectRatio(e.target.checked)}
+                  className="mr-2"
+                />
+                Keep Aspect Ratio
+              </label>
             </div>
             <div className="mb-4">
               <button
@@ -290,12 +354,43 @@ const WaveManipulation: React.FC = () => {
               )}
             </div>
           </div>
-          <div className="md:w-2/3" ref={containerRef} style={{ height: '600px' }}>
-            <canvas 
-              ref={canvasRef} 
-              className="border border-gray-300 w-full h-full" 
-              aria-label="Wave Manipulation Visualization"
-            />
+          <div className="md:w-2/3" ref={containerRef}>
+            <Rnd
+              size={{ width: size.width, height: size.height }}
+              position={{ x: position.x, y: position.y }}
+              onDragStop={(e, d) => setPosition({ x: d.x, y: d.y })}
+              onResizeStop={(e, direction, ref, delta, position) => {
+                setPosition(position)
+                if (keepAspectRatio) {
+                  const aspectRatio = size.width / size.height
+                  if (direction.includes('right') || direction.includes('left')) {
+                    setSize({
+                      width: ref.offsetWidth,
+                      height: ref.offsetWidth / aspectRatio,
+                    })
+                  } else {
+                    setSize({
+                      width: ref.offsetHeight * aspectRatio,
+                      height: ref.offsetHeight,
+                    })
+                  }
+                } else {
+                  setSize({
+                    width: ref.offsetWidth,
+                    height: ref.offsetHeight,
+                  })
+                }
+              }}
+              lockAspectRatio={keepAspectRatio}
+            >
+              <canvas 
+                ref={canvasRef} 
+                width={size.width}
+                height={size.height}
+                className="border border-gray-300 w-full h-full" 
+                aria-label="Wave Manipulation Visualization"
+              />
+            </Rnd>
           </div>
         </div>
       )}
@@ -303,5 +398,7 @@ const WaveManipulation: React.FC = () => {
   )
 }
 
-export default WaveManipulation
+export default function Page() {
+  return <WaveManipulation />
+}
 
