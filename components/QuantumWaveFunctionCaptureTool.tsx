@@ -78,7 +78,7 @@ const QuantumWaveFunctionCaptureTool: React.FC = () => {
     ctx.font = `${fontSize}px monospace`
 
     const words = result.split('')
-    let lines: string[] = ['']
+    const lines: string[] = [''] // Changed 'let' to 'const'
     let currentLineWidth = 0
 
     for (const word of words) {
