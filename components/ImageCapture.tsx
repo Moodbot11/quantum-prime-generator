@@ -14,7 +14,7 @@ const ImageCapture: React.FC<ImageCaptureProps> = ({ content, onClose }) => {
     if (content) {
       renderImage()
     }
-  }, [content])
+  }, [content, renderImage])
 
   const renderImage = () => {
     const canvas = canvasRef.current
@@ -32,7 +32,7 @@ const ImageCapture: React.FC<ImageCaptureProps> = ({ content, onClose }) => {
     ctx.font = `${fontSize}px monospace`
 
     const words = content.split('')
-    let lines: string[] = ['']
+    const lines: string[] = ['']
     let currentLineWidth = 0
 
     for (const word of words) {
