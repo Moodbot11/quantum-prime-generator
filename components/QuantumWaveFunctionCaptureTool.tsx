@@ -1,4 +1,4 @@
-type Big = any;
+type BigType = any;
 
 'use client'
 
@@ -29,7 +29,7 @@ const QuantumWaveFunctionCaptureTool: React.FC = () => {
       const bigFreq1 = new Big(frequency1)
       const bigFreq2 = new Big(frequency2)
 
-      let capturedResult: Big
+      let capturedResult: BigType
 
       switch (operation) {
         case 'multiply':
