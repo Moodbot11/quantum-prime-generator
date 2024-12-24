@@ -20,8 +20,11 @@ export default function RootLayout({
         <nav className="bg-gray-800 p-4">
           <div className="container mx-auto flex justify-between items-center">
             <Link href="/" className="text-white text-xl font-bold">Quantum Prime Generator</Link>
-            <Link href="/wave-capture" className="text-white hover:text-cyan-400 mr-4">Wave Capture</Link>
-            <Link href="/wave-manipulation" className="text-white hover:text-cyan-400">Wave Manipulation</Link>
+            <div className="flex space-x-4">
+              <Link href="/wave-capture" className="text-white hover:text-cyan-400">Wave Capture</Link>
+              <Link href="/wave-manipulation" className="text-white hover:text-cyan-400">Wave Manipulation</Link>
+              <Link href="/frequency-tools" className="text-white hover:text-cyan-400">Frequency Tools</Link>
+            </div>
           </div>
         </nav>
         {children}
