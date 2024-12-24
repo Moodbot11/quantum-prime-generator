@@ -10,15 +10,15 @@ const WaveManipulation: React.FC = () => {
   const [rotation, setRotation] = useState(0)
   const [waveAmplitude, setWaveAmplitude] = useState(10)
   const [waveFrequency, setWaveFrequency] = useState(1)
-  const [environmentalFrequency, setEnvironmentalFrequency] = useState(0.5)
-  const [clarity, setClarity] = useState(1)
+  // const [environmentalFrequency, setEnvironmentalFrequency] = useState(0.5)
+  // const [clarity, setClarity] = useState(1)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<number>()
   const [isRecording, setIsRecording] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const chunksRef = useRef<Blob[]>([])
-  const router = useRouter()
+  // const router = useRouter()
 
   const originalImageRef = useRef<HTMLImageElement | null>(null)
 
@@ -130,13 +130,13 @@ const WaveManipulation: React.FC = () => {
     setWaveFrequency(parseFloat(event.target.value))
   }
 
-  const handleEnvironmentalFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEnvironmentalFrequency(parseFloat(event.target.value))
-  }
+  // const handleEnvironmentalFrequency = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setEnvironmentalFrequency(parseFloat(event.target.value))
+  // }
 
-  const handleClarity = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setClarity(parseFloat(event.target.value))
-  }
+  // const handleClarity = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setClarity(parseFloat(event.target.value))
+  // }
 
   const startRecording = () => {
     if (canvasRef.current) {
