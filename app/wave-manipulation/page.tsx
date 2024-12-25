@@ -116,8 +116,10 @@ export default function WaveManipulationPage() {
           />
         </div>
       </div>
-      <WaveManipulation />
-      <div className="container mx-auto px-4 py-8">
+      <div className="relative z-10 mt-8">
+        <WaveManipulation />
+      </div>
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <Button 
           onClick={() => setShowChatbot(!showChatbot)} 
           className="w-full py-4 text-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
