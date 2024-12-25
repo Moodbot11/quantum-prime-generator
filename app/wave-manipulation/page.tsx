@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import WaveManipulation from '../../components/WaveManipulation'
-import GoogleAIChatbot from '../../components/GoogleAIChatbot'
+import WaveManipulation from '@/components/WaveManipulation'
+import GoogleAIChatbot from '@/components/GoogleAIChatbot'
 import { Button } from "@/components/ui/button"
 
 export default function WaveManipulationPage() {
