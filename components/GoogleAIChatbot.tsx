@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
-interface Window {
-  SpeechRecognition: any;
-  webkitSpeechRecognition: any;
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+  }
 }
 
 const SpeechRecognition = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
@@ -23,7 +24,7 @@ const GoogleAIChatbot: React.FC = () => {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [userName, setUserName] = useState('')
-  const recognitionRef = useRef<typeof SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const synthRef = useRef<typeof speechSynthesis | null>(null);
 
   useEffect(() => {
@@ -45,8 +46,8 @@ const GoogleAIChatbot: React.FC = () => {
         console.warn('Speech recognition not supported in this browser.');
       }
 
-      if (speechSynthesis) {
-        synthRef.current = speechSynthesis;
+      if ('speechSynthesis' in window) {
+        synthRef.current = window.speechSynthesis;
       } else {
         console.warn('Speech synthesis not supported in this browser.');
       }
