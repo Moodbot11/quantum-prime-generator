@@ -4,9 +4,9 @@ import React, { useState, useRef } from 'react'
 import Big from 'big.js'
 import ImageCapture from './ImageCapture'
 
-interface QuantumWaveFunctionCaptureToolProps {}
+interface Props {}
 
-const QuantumWaveFunctionCaptureTool: React.FC<QuantumWaveFunctionCaptureToolProps> = () => {
+export default function QuantumWaveFunctionCaptureTool({}: Props) {
   Big.DP = 10000;
   Big.RM = Big.roundDown;
 
@@ -252,6 +252,4 @@ const QuantumWaveFunctionCaptureTool: React.FC<QuantumWaveFunctionCaptureToolPro
     </div>
   )
 }
-
-export default QuantumWaveFunctionCaptureTool
 
