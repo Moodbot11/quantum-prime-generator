@@ -4,7 +4,14 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react'
+
+interface Window {
+  SpeechRecognition: any;
+  webkitSpeechRecognition: any;
+}
+
+const SpeechRecognition = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
+const speechSynthesis = typeof window !== 'undefined' ? window.speechSynthesis : null;
 
 interface Message {
   role: 'user' | 'model';
@@ -16,10 +23,8 @@ const GoogleAIChatbot: React.FC = () => {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [userName, setUserName] = useState('')
-  const [isListening, setIsListening] = useState(false)
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
-  const synthRef = useRef<SpeechSynthesis | null>(null)
+  const recognitionRef = useRef<typeof SpeechRecognition | null>(null);
+  const synthRef = useRef<typeof speechSynthesis | null>(null);
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName')
@@ -32,53 +37,27 @@ const GoogleAIChatbot: React.FC = () => {
         localStorage.setItem('userName', name)
       }
     }
+    if (typeof window !== 'undefined') {
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        // ... rest of the SpeechRecognition setup
+      } else {
+        console.warn('Speech recognition not supported in this browser.');
+      }
 
-    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-      recognitionRef.current = new SpeechRecognition()
-      recognitionRef.current.continuous = true
-      recognitionRef.current.interimResults = true
-      recognitionRef.current.onresult = handleSpeechResult
+      if (speechSynthesis) {
+        synthRef.current = speechSynthesis;
+      } else {
+        console.warn('Speech synthesis not supported in this browser.');
+      }
     }
-    synthRef.current = window.speechSynthesis
   }, [])
-
-  const handleSpeechResult = (event: SpeechRecognitionEvent) => {
-    const transcript = Array.from(event.results)
-      .map(result => result[0].transcript)
-      .join('')
-
-    setInput(transcript)
-  }
-
-  const toggleListening = () => {
-    if (isListening) {
-      recognitionRef.current?.stop()
-    } else {
-      recognitionRef.current?.start()
-    }
-    setIsListening(!isListening)
-  }
-
-  const speakResponse = (text: string) => {
-    if (synthRef.current) {
-      setIsSpeaking(true)
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.onend = () => setIsSpeaking(false)
-      synthRef.current.speak(utterance)
-    }
-  }
-
-  const stopSpeaking = () => {
-    if (synthRef.current) {
-      synthRef.current.cancel()
-      setIsSpeaking(false)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim()) return
+
+    console.log('Sending message to AI:', input);
 
     const userMessage: Message = { role: 'user', content: input }
     setMessages(prev => [...prev, userMessage])
@@ -105,7 +84,6 @@ const GoogleAIChatbot: React.FC = () => {
 
       const assistantMessage: Message = { role: 'model', content: data.response };
       setMessages(prev => [...prev, assistantMessage])
-      speakResponse(data.response)
     } catch (error) {
       console.error('Error:', error)
       setMessages(prev => [...prev, { role: 'model', content: 'Sorry, I encountered an error. Please try again.' }])
@@ -143,18 +121,7 @@ const GoogleAIChatbot: React.FC = () => {
             disabled={isLoading}
           />
           <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
-            Send
-          </Button>
-          <Button type="button" onClick={toggleListening} className={`${isListening ? 'bg-red-500' : 'bg-green-500'} text-white`}>
-            {isListening ? <MicOff /> : <Mic />}
-          </Button>
-          <Button 
-            type="button" 
-            onClick={isSpeaking ? stopSpeaking : () => speakResponse(messages[messages.length - 1]?.content || '')} 
-            className="bg-purple-600 text-white"
-            disabled={messages.length === 0}
-          >
-            {isSpeaking ? <VolumeX /> : <Volume2 />}
+            Get Advice
           </Button>
         </form>
         <div className="mt-4 text-sm text-blue-600 font-semibold">
