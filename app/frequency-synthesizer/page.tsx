@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 import FrequencySynthesizer from '@/components/FrequencySynthesizer'
 import CodeConverter from '@/components/CodeConverter'

@@ -65,7 +65,7 @@ const CodeConverter: React.FC = () => {
             rows={5}
           />
           <div className="flex items-center space-x-2">
-            <Select onValueChange={(value) => setConversionType(value as ConversionType)}>
+            <Select onValueChange={(value: string) => setConversionType(value as ConversionType)}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select conversion type" />
               </SelectTrigger>

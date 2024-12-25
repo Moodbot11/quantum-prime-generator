@@ -1,14 +1,18 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Big from 'big.js'
-import ImageCapture from './ImageCapture'
+import dynamic from 'next/dynamic'
+
+const ImageCapture = dynamic(() => import('./ImageCapture'), { ssr: false })
 
 interface Props {}
 
-export default function QuantumWaveFunctionCaptureTool({}: Props) {
-  Big.DP = 10000;
-  Big.RM = Big.roundDown;
+const QuantumWaveFunctionCaptureTool: React.FC<Props> = () => {
+  useEffect(() => {
+    Big.DP = 10000;
+    Big.RM = Big.roundDown;
+  }, []);
 
   const [frequency1, setFrequency1] = useState('')
   const [frequency2, setFrequency2] = useState('')
@@ -51,7 +55,7 @@ export default function QuantumWaveFunctionCaptureTool({}: Props) {
           capturedResult = bigFreq1.times(bigFreq2).sqrt()
           break
         case 'quantum-fourier':
-          capturedResult = bigFreq1.times(Math.PI).times(bigFreq2).sin()
+          capturedResult = new Big(Math.sin(bigFreq1.times(Math.PI).times(bigFreq2).toNumber()))
           break
         default:
           throw new Error('Invalid operation')
@@ -252,4 +256,6 @@ export default function QuantumWaveFunctionCaptureTool({}: Props) {
     </div>
   )
 }
+
+export default QuantumWaveFunctionCaptureTool
 

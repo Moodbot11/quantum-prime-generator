@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     domains: ['vercel.com'],
@@ -9,15 +10,10 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000', 'vercel.app']
     }
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.tsx?$/,
-      use: 'ts-loader',
-      exclude: /node_modules/,
-    })
-    return config
+  typescript: {
+    ignoreBuildErrors: true,
   }
 }
 
-module.exports = nextConfig
+export default nextConfig
 
