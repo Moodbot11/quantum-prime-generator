@@ -104,8 +104,15 @@ const FrequencyImageAnalyzer: React.FC = () => {
   }
 
   const getDominantFrequency = (dataArray: Uint8Array, sampleRate: number): number => {
-    const maxIndex = dataArray.indexOf(Math.max(...dataArray))
-    return maxIndex * sampleRate / (2 * dataArray.length)
+    let maxValue = 0;
+    let maxIndex = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      if (dataArray[i] > maxValue) {
+        maxValue = dataArray[i];
+        maxIndex = i;
+      }
+    }
+    return maxIndex * sampleRate / (2 * dataArray.length);
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
