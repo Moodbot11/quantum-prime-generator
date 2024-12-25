@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -41,7 +41,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
   }
- 
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -79,7 +79,7 @@
     --chart-5: 340 75% 55%;
   }
 }
- 
+
 @layer base {
   * {
     @apply border-border;
@@ -87,5 +87,50 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom styles for prose in dark mode */
+.dark .prose {
+  color: hsl(var(--foreground));
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose h5,
+.dark .prose h6 {
+  color: hsl(var(--foreground));
+}
+
+.dark .prose a {
+  color: hsl(var(--primary));
+}
+
+.dark .prose strong {
+  color: hsl(var(--foreground));
+}
+
+.dark .prose ol > li::before,
+.dark .prose ul > li::before {
+  color: hsl(var(--foreground));
+}
+
+.dark .prose hr {
+  border-color: hsl(var(--border));
+}
+
+.dark .prose blockquote {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+
+.dark .prose thead {
+  color: hsl(var(--foreground));
+  border-bottom-color: hsl(var(--border));
+}
+
+.dark .prose tbody tr {
+  border-bottom-color: hsl(var(--border));
 }
 

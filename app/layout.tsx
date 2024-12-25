@@ -24,6 +24,7 @@ export default function RootLayout({
               <Link href="/wave-capture" className="text-white hover:text-cyan-400">Wave Capture</Link>
               <Link href="/wave-manipulation" className="text-white hover:text-cyan-400">Wave Manipulation</Link>
               <Link href="/frequency-tools" className="text-white hover:text-cyan-400">Frequency Tools</Link>
+              <Link href="/frequency-synthesizer" className="text-white hover:text-cyan-400">Frequency Synthesizer</Link>
             </div>
           </div>
         </nav>

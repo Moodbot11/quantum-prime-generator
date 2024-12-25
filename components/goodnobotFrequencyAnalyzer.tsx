@@ -4,8 +4,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { brainwaveFrequencies, FrequencyRange, illnessFrequencies, IllnessFrequency } from "@/lib/frequencyDatabase"
 import AnalysisCategories from './AnalysisCategories'
-import GoogleAIChatbot from './GoogleAIChatbot'
 
 interface CapturedFrequency {
   timestamp: string;
@@ -128,53 +128,104 @@ const FrequencyAnalyzer: React.FC = () => {
     draw()
   }
 
-  const analyzeFrequencies = async () => {
-    const allFrequencies = capturedFrequencies.flatMap(cf => cf.frequencies);
+  const analyzeFrequencies = () => {
+    const allFrequencies = capturedFrequencies.flatMap(cf => cf.frequencies)
     const frequencyCounts = allFrequencies.reduce((acc, freq) => {
-      acc[freq] = (acc[freq] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
+      acc[freq] = (acc[freq] || 0) + 1
+      return acc
+    }, {} as Record<number, number>)
 
     const sortedFrequencies = Object.entries(frequencyCounts)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
-      .map(([freq]) => parseInt(freq));
+      .map(([freq]) => parseInt(freq))
 
-    console.log('Sending frequencies for analysis:', sortedFrequencies);
+    let analysis = 'Based on the captured frequencies:\n\n'
+    
+    sortedFrequencies.forEach(freq => {
+      const matchingRanges = brainwaveFrequencies.filter(
+        range => freq >= range.min && freq <= range.max
+      )
 
-    try {
-      const response = await fetch('/api/analyze-frequency', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ frequencies: sortedFrequencies }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response body:', errorText);
-        setError(`HTTP error! status: ${response.status}, body: ${errorText}`);
-        return;
+      analysis += `Frequency ${freq} Hz:\n`
+      if (matchingRanges.length > 0) {
+        matchingRanges.forEach(range => {
+          analysis += `- ${range.description}\n  Source: ${range.source}\n`
+        })
+      } else {
+        analysis += getGeneralFrequencyDescription(freq)
       }
+      analysis += '\n'
+    })
 
-      const data = await response.json();
-      console.log('Received analysis:', data);
+    setAnalysis(analysis)
+    performMedicalAnalysis(sortedFrequencies)
+  }
 
-      setAnalysis(data.analysis);
-      setMedicalAnalysis(data.medicalAnalysis);
-    } catch (error) {
-      console.error('Error analyzing frequencies:', error);
-      setError(`Failed to analyze frequencies. Error: ${error.toString()}`);
+  const performMedicalAnalysis = (frequencies: number[]) => {
+    let medicalAnalysis = 'Frequency Correlation Analysis:\n\n'
+    let matchFound = false
+
+    frequencies.forEach(freq => {
+      const matchingIllnesses = illnessFrequencies.filter(
+        illness => Math.abs(illness.frequency - freq) <= 5
+      )
+
+      medicalAnalysis += `Frequency ${freq} Hz:\n`
+      if (matchingIllnesses.length > 0) {
+        matchFound = true
+        matchingIllnesses.forEach(illness => {
+          medicalAnalysis += `- ${illness.name} (${illness.frequency} Hz)\n  ${illness.description}\n  Source: ${illness.source}\n`
+        })
+      } else {
+        medicalAnalysis += getPositiveFrequencyEffect(freq)
+      }
+      medicalAnalysis += '\n'
+    })
+
+    if (!matchFound) {
+      medicalAnalysis += 'While no specific correlations were found with known frequency-illness associations, remember that all frequencies can have various effects on the body and mind.\n'
     }
-  };
+
+    medicalAnalysis += '\nIMPORTANT DISCLAIMER: This analysis is based on experimental research and theoretical correlations. It should NOT be considered a medical diagnosis. The effects of specific frequencies on health are still being studied and are not conclusively proven. Always consult with a qualified healthcare professional for proper medical advice, diagnosis, and treatment.'
+
+    setMedicalAnalysis(medicalAnalysis)
+  }
+
+  const getGeneralFrequencyDescription = (freq: number): string => {
+    if (freq < 20) {
+      return `This low frequency is associated with deep relaxation and meditative states. It may promote calmness and introspection.\n`
+    } else if (freq < 100) {
+      return `This frequency falls within the range of brain waves associated with various cognitive states, from relaxed alertness to focused concentration.\n`
+    } else if (freq < 1000) {
+      return `This frequency is in the audible range and may have subtle effects on mood and physiology. Some studies suggest potential benefits for relaxation or focus.\n`
+    } else {
+      return `This higher frequency is beyond the typical brainwave ranges but may still interact with the body's electromagnetic field in subtle ways.\n`
+    }
+  }
+
+  const getPositiveFrequencyEffect = (freq: number): string => {
+    const effects = [
+      "May promote a sense of balance and harmony.",
+      "Could potentially enhance mental clarity and focus.",
+      "Might contribute to a feeling of well-being and relaxation.",
+      "Some researchers suggest it may support the body's natural healing processes.",
+      "May help in achieving a meditative state or deeper relaxation.",
+      "Could potentially aid in stress reduction and promoting calmness.",
+      "Might enhance creativity and problem-solving abilities.",
+      "Some studies indicate it may improve sleep quality when used before bedtime.",
+      "Could potentially boost energy levels and motivation.",
+      "May contribute to an overall sense of vitality and wellness."
+    ]
+    return `- ${effects[Math.floor(Math.random() * effects.length)]}\n  Note: These effects are based on general frequency research and individual experiences may vary.\n`
+  }
 
   return (
     <div className="space-y-8">
       <Card className="p-6">
         <CardHeader>
-          <CardTitle>Advanced Quantum Frequency Analyzer</CardTitle>
-          <CardDescription>Analyze your personal frequency patterns for deep health insights.</CardDescription>
+          <CardTitle>Quantum Frequency Analyzer</CardTitle>
+          <CardDescription>Analyze voice frequencies and explore potential correlations with various physiological states based on emerging research.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
@@ -195,9 +246,6 @@ const FrequencyAnalyzer: React.FC = () => {
                 Stop Recording
               </Button>
             )}
-            <Button onClick={analyzeFrequencies} className="bg-blue-500 hover:bg-blue-600">
-              Analyze Frequencies
-            </Button>
           </div>
           {error && <p className="text-red-500 mb-4">{error}</p>}
           <div className="mt-4">
@@ -237,23 +285,14 @@ const FrequencyAnalyzer: React.FC = () => {
           )}
           {medicalAnalysis && (
             <div className="mt-4">
-              <h3 className="text-xl font-bold mb-2 text-blue-600">Your Personalized Frequency Analysis:</h3>
-              <pre className="whitespace-pre-wrap bg-blue-50 p-4 rounded border border-blue-200">{medicalAnalysis}</pre>
+              <h3 className="text-lg font-semibold mb-2">Frequency Correlation Analysis:</h3>
+              <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded">{medicalAnalysis}</pre>
             </div>
           )}
         </CardContent>
       </Card>
       
       <AnalysisCategories />
-      
-      <Card className="p-6 bg-blue-50 border-2 border-blue-300">
-        <CardHeader>
-          <CardTitle>Medical AI Advisor</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <GoogleAIChatbot />
-        </CardContent>
-      </Card>
     </div>
   )
 }

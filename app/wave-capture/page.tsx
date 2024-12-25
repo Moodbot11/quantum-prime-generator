@@ -7,7 +7,6 @@ export default function WaveCapturePage() {
         <h1 className="text-4xl font-bold mb-8 text-center text-cyan-400">Quantum Wave Function Capture Tool</h1>
         <QuantumWaveFunctionCaptureTool />
       </div>
-    </div>
+    </div> 
   )
 }
-
