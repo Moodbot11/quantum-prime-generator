@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,10 +15,6 @@ const GoogleAIChatbot: React.FC = () => {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [userName, setUserName] = useState('')
-  const [isListening, setIsListening] = useState(false)
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const recognitionRef = useRef<any>(null)
-  const synthRef = useRef<SpeechSynthesis | null>(null)
 
   useEffect(() => {
     const storedName = localStorage.getItem('userName')
@@ -31,53 +27,7 @@ const GoogleAIChatbot: React.FC = () => {
         localStorage.setItem('userName', name)
       }
     }
-
-    if (typeof window !== 'undefined') {
-      if ('webkitSpeechRecognition' in window) {
-        const SpeechRecognition = window.webkitSpeechRecognition
-        recognitionRef.current = new SpeechRecognition()
-        recognitionRef.current.continuous = true
-        recognitionRef.current.interimResults = true
-        recognitionRef.current.onresult = handleSpeechResult
-      } else {
-        console.warn('Speech recognition not supported in this browser.')
-      }
-
-      if ('speechSynthesis' in window) {
-        synthRef.current = window.speechSynthesis
-      } else {
-        console.warn('Speech synthesis not supported in this browser.')
-      }
-    }
   }, [])
-
-  const handleSpeechResult = (event: any) => {
-    const transcript = Array.from(event.results)
-      .map((result: any) => result[0])
-      .map((result: any) => result.transcript)
-      .join('')
-
-    setInput(transcript)
-  }
-
-  const toggleListening = () => {
-    if (isListening) {
-      recognitionRef.current?.stop()
-      setIsListening(false)
-    } else {
-      recognitionRef.current?.start()
-      setIsListening(true)
-    }
-  }
-
-  const speak = (text: string) => {
-    if (synthRef.current) {
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.onstart = () => setIsSpeaking(true)
-      utterance.onend = () => setIsSpeaking(false)
-      synthRef.current.speak(utterance)
-    }
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -110,7 +60,6 @@ const GoogleAIChatbot: React.FC = () => {
 
       const assistantMessage: Message = { role: 'model', content: data.response };
       setMessages(prev => [...prev, assistantMessage])
-      speak(data.response)
     } catch (error) {
       console.error('Error:', error)
       setMessages(prev => [...prev, { role: 'model', content: 'Sorry, I encountered an error. Please try again.' }])
@@ -149,9 +98,6 @@ const GoogleAIChatbot: React.FC = () => {
           />
           <Button type="submit" disabled={isLoading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold">
             Get Advice
-          </Button>
-          <Button type="button" onClick={toggleListening} className={`bg-${isListening ? 'red' : 'green'}-500 hover:bg-${isListening ? 'red' : 'green'}-600 text-white font-bold`}>
-            {isListening ? 'Stop' : 'Start'} Listening
           </Button>
         </form>
         <div className="mt-4 text-sm text-blue-600 font-semibold">
