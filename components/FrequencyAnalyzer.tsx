@@ -152,10 +152,7 @@ const FrequencyAnalyzer: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response body:', errorText);
-        setError(`HTTP error! status: ${response.status}, body: ${errorText}`);
-        return;
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -165,7 +162,7 @@ const FrequencyAnalyzer: React.FC = () => {
       setMedicalAnalysis(data.medicalAnalysis);
     } catch (error) {
       console.error('Error analyzing frequencies:', error);
-      setError(`Failed to analyze frequencies. Error: ${error.toString()}`);
+      setError(`Failed to analyze frequencies. ${error instanceof Error ? error.message : 'Unknown error occurred.'}`);
     }
   };
 
