@@ -1,27 +1,43 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from 'next/server';
+import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
 
-// Make sure we're using the correct environment variable
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+// Initialize the model
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json();
+    const { messages } = await req.json();
     
-    // Let's add some logging to help debug
-    console.log("Received message:", message);
+    // Convert messages to Gemini format
+    const geminiMessages = messages.map((m: any) => ({
+      role: m.role === "user" ? "user" : "model",
+      parts: [{ text: m.content }],
+    }));
 
-    const result = await model.generateContent(message);
-    const response = result.response.text();
+    // Start a chat session
+    const chat = model.startChat({
+      history: geminiMessages.slice(0, -1),
+    });
 
-    // Log the response for debugging
-    console.log("AI response:", response);
+    // Generate content using the new method
+    const result = await chat.sendMessage(geminiMessages[geminiMessages.length - 1].parts[0].text);
+    const response = await result.response;
+    const text = response.text();
 
-    return NextResponse.json({ response });
-  } catch (error) {
-    console.error('Error in chat API:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    // Convert the response to a streaming format
+    const stream = GoogleGenerativeAIStream(text);
+
+    // Return a StreamingTextResponse, which can be consumed by the client
+    return new StreamingTextResponse(stream);
+  } catch (error: any) {
+    console.error('Error in chat route:', error);
+    return new Response(JSON.stringify({
+      error: error.message || "An error occurred during the request"
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 
