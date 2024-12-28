@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import AnalysisCategories from './AnalysisCategories'
-import GoogleAIChatbot from './GoogleAIChatbot'
 
 interface CapturedFrequency {
   timestamp: string;
@@ -243,15 +242,7 @@ const FrequencyAnalyzer: React.FC = () => {
       
       <AnalysisCategories />
       
-      <Card className="p-6 bg-blue-50 border-2 border-blue-300">
-        <CardHeader>
-          <CardTitle>Medical AI Advisor</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <GoogleAIChatbot />
-        </CardContent>
-      </Card>
-    </div>
+      </div>
   )
 }
 

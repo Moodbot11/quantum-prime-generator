@@ -1,11 +1,13 @@
-import QuantumWaveFunctionCaptureTool from '@/components/QuantumWaveFunctionCaptureTool'
+import React from 'react'
+import QuantumWaveFunctionCaptureTool from '../../components/QuantumWaveFunctionCaptureTool'
 
-export default function WaveCapturePage() {
+export default function WaveCapturePage(): React.ReactElement {
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Quantum Wave Function Capture</h1>
-      <QuantumWaveFunctionCaptureTool />
+    <div className="min-h-screen bg-gray-900 py-12">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-8 text-center text-cyan-400">Quantum Wave Function Capture Tool</h1>
+        <QuantumWaveFunctionCaptureTool />
+      </div>
     </div>
   )
 }
-
