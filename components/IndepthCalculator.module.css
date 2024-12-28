@@ -1,0 +1,63 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.result {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+
+.analysis {
+    margin-top: 30px;
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.analysis h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+.analysis ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.analysis li {
+    margin-bottom: 5px;
+}
+
