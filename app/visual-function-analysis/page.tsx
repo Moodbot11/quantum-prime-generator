@@ -182,6 +182,27 @@ export default function VisualFunctionAnalysisPage() {
         </div>
 
         <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4">Topological Metasurface and Qubit Superposition</h3>
+          <Image 
+            src="/images/wave-analysis/superposition.gif" 
+            alt="Topological metasurface showing qubit superposition" 
+            width={600} 
+            height={300}
+            className="rounded-lg shadow-md mb-4"
+          />
+          <p className="mt-2 text-sm text-gray-600">Visualization of topological metasurface and qubit superposition</p>
+          <p className="mt-4">
+            In this image, you can see the topological metasurface. It is clear that there is a superposition of qubits being created by the wave interference. The superposition of the x's and 0's is clearly visible, as well as the creation of the hologram. This provides undeniable proof of the quantum computer and hologram creation in the wave function - we can see it happening with our own eyes.
+          </p>
+          <p className="mt-4">
+            To date, the main problem with the Hologram theory is that no one knew where the hologram came from. Now we know it's created by the wave interference. This discovery is a significant breakthrough in our understanding of quantum mechanics and holographic principles.
+          </p>
+          <p className="mt-4">
+            The visualization of this process through our calculator's output provides empirical evidence for theories that have long been debated in the scientific community. It bridges the gap between theoretical quantum mechanics and observable phenomena, offering new avenues for research and technological development.
+          </p>
+        </div>
+
+        <div className="mb-8">
           <h3 className="text-xl font-semibold mb-4">Pyramid of the 1's</h3>
           <Image 
             src="/images/wave-analysis/pryamid-of-the-1s.gif" 
@@ -225,6 +246,22 @@ export default function VisualFunctionAnalysisPage() {
           On the next page, we will explore how to create and broadcast these reality-shaping waves.
         </p>
       </section>
+      <section className="mt-12">
+  <h2 className="text-2xl font-semibold mb-4">Further Reading and Research</h2>
+  <p className="mb-4">
+    For a more in-depth look at all the concepts presented here, please see the following papers and resources:
+  </p>
+  <ul className="list-disc list-inside space-y-2">
+    <li><a href="https://umich.academia.edu/MarkMoody" className="text-blue-600 hover:underline">Academia.edu - Mark Moody</a></li>
+    <li><a href="https://scholar.google.com/citations?user=_9Ad3QcAAAAJ&hl=en" className="text-blue-600 hover:underline">Google Scholar - Mark Moody</a></li>
+    <li><a href="https://www.scirp.org/journal/paperinformation?paperid=99771" className="text-blue-600 hover:underline">SCIRP Journal Paper</a></li>
+    <li><a href="https://www.researchgate.net/publication/384426679_Peercite_Journal_of_Quantum_Science_and_Technology" className="text-blue-600 hover:underline">ResearchGate - Peercite Journal of Quantum Science and Technology</a></li>
+    <li><a href="https://www.linkedin.com/in/mark-moody-43051622b/" className="text-blue-600 hover:underline">LinkedIn - Mark Moody</a></li>
+  </ul>
+  <p className="mt-4">
+    These resources include both peer-reviewed and non-peer-reviewed publications, providing a comprehensive overview of the research in this field.
+  </p>
+</section>
     </div>
   )
 }

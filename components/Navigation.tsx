@@ -10,10 +10,14 @@ const Navigation = () => {
         <li><Link href="/wave-capture" className="hover:text-cyan-400">Quantum Wave Function Capture</Link></li>
         <li><Link href="/indepth-calculator" className="hover:text-cyan-400">In-Depth Wave Analysis</Link></li>
         <li><Link href="/visual-function-analysis" className="hover:text-cyan-400">Visual Function Analysis</Link></li>
-        <li><Link href="/frequency-synthesizer" className="hover:text-cyan-400">Frequency Synthesizer</Link></li>
-        <li><Link href="/analyze-frequency" className="hover:text-cyan-400">Analyze Frequency</Link></li>
+        <li><Link href="/individual-creation-of-reality" className="hover:text-cyan-400">Individual Creation of Reality</Link></li>
+        <li><Link href="/broadcast-reality-creation" className="hover:text-cyan-400">Broadcast Reality Creation</Link></li>
         <li><Link href="/comments" className="hover:text-cyan-400">Comments</Link></li>
       </ul>
+      <div className="mt-4 pt-4 border-t border-gray-700 text-sm text-gray-400">
+        <p>Contact: <a href="mailto:wavepatternmath@gmail.com" className="hover:text-cyan-400">wavepatternmath@gmail.com</a></p>
+        <p>&copy; 2023 Mark Lance Moody. All rights reserved.</p>
+      </div>
     </nav>
   )
 }
