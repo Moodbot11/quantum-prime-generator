@@ -29,13 +29,25 @@ const EncodedWaveCodeCalculator: React.FC<EncodedWaveCodeCalculatorProps> = ({ o
   const pilotWaveConstant = '111111111111111111111111111111111111111111111111111111111111111111111111111111111';
   const denominator = '999999998000000001';
 
+  const calculateAndFormat = (calculatedResult: Big) => {
+    let formattedResult = calculatedResult.toFixed(9999);
+    // Remove trailing zeros after the decimal point
+    formattedResult = formattedResult.replace(/\.?0+$/, "");
+    // If the result is an integer, ensure we don't have a trailing decimal point
+    if (formattedResult.endsWith('.')) {
+      formattedResult = formattedResult.slice(0, -1);
+    }
+    return formattedResult;
+  };
+
   const calculatePresetOne = () => {
     try {
       const numerator = new Big(pilotWaveConstant);
       const denom = new Big(denominator);
       const calculatedResult = numerator.div(denom);
-      setResult(calculatedResult.toString());
-      onCalculate(calculatedResult.toString());
+      const formattedResult = calculateAndFormat(calculatedResult);
+      setResult(formattedResult);
+      onCalculate(formattedResult);
     } catch (err) {
       setResult('Error: ' + (err instanceof Error ? err.message : String(err)));
     }
@@ -65,8 +77,9 @@ const EncodedWaveCodeCalculator: React.FC<EncodedWaveCodeCalculatorProps> = ({ o
           break;
       }
 
-      setResult(calculatedResult.toString());
-      onCalculate(calculatedResult.toString());
+      const formattedResult = calculateAndFormat(calculatedResult);
+      setResult(formattedResult);
+      onCalculate(formattedResult);
     } catch (err) {
       setResult('Error: ' + (err instanceof Error ? err.message : String(err)));
     }
@@ -86,8 +99,8 @@ const EncodedWaveCodeCalculator: React.FC<EncodedWaveCodeCalculatorProps> = ({ o
       
       const numerator = new Big(modifiedPilotWave);
       const calculatedResult = numerator.div(denom);
-      const formattedResult = formatResult(calculatedResult.toString());
-      setResult(formattedResult);
+      const formattedResult = calculateAndFormat(calculatedResult);
+      setResult(formatResult(formattedResult));
       onCalculate(formattedResult);
     } catch (err) {
       setResult('Error: ' + (err instanceof Error ? err.message : String(err)));
